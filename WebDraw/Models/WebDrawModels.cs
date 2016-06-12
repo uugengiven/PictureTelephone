@@ -30,6 +30,7 @@ namespace WebDraw.Models
         public int ChainId { get; set; }
         public EntryType entryType { get; set; }
         public string Value { get; set; }
+        public bool Active { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

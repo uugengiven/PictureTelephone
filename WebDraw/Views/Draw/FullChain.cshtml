@@ -4,19 +4,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Here is the full dealy (yo)</h2>
-<h3>It all begin right here:</h3>
-<h3>@Model.StartSuggestion.Description</h3>
+<h2>Here was the game!</h2>
+<h3>It all began right here:</h3>
 
+<div class="entry ent-description">
+    <h3>@Model.StartSuggestion.Description</h3>
+</div>
 @foreach (var entry in Model.Entries)
 {
     if (entry.entryType == WebDraw.Models.EntryType.Picture)
     {
-        <img src="~/Images/@entry.Value" /><br />
+        <div class="entry ent-picture">
+            <img src="~/Images/@entry.Value" /><br />
+        </div>
     }
     else
     {
-        <h3>@entry.Value</h3>
+        <div class="entry ent-description">
+            <h3>@entry.Value</h3>
+        </div>
     }
 }
 

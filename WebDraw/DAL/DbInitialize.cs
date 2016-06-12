@@ -17,7 +17,14 @@ namespace WebDraw.DAL
             {
                 new StartSuggestion { Description = "A cat jumping over the moon" },
                 new StartSuggestion { Description = "Robert Frost" },
-                new StartSuggestion { Description = "Mario vs Sonic" }
+                new StartSuggestion { Description = "Mario vs Sonic" },
+                new StartSuggestion { Description = "Thunder from Down Under" },
+                new StartSuggestion { Description = "Arbor Day" },
+                new StartSuggestion { Description = "Priest" },
+                new StartSuggestion { Description = "Fashion Disaster" },
+                new StartSuggestion { Description = "Kentuky Derby" },
+                new StartSuggestion { Description = "Pittsburgh in Movies" },
+                new StartSuggestion { Description = "Too many cats" }
             };
 
             foreach (var item in starts)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,10 @@ namespace WebDraw.Controllers
     public class DrawController : Controller
     {
         private WebDrawDbContext db = new WebDrawDbContext();
+        Random rnd = new Random();
+
         // GET: Draw
+        [Authorize]
         public ActionResult Index(int? id)
         {
             if (id != null)
@@ -45,12 +49,26 @@ namespace WebDraw.Controllers
             }
             else
             {
-                return View("Describe");
+                // try to find a random one for the person to work on
+                int uid = UserID();
+                var potentialEntries = db.Entries.Where(e => e.Active == true && e.UserId != uid).ToList();
+                if (potentialEntries.Count == 0)
+                {
+                    return RedirectToAction("StartChain");
+                }
+                else
+                {
+                    int total = potentialEntries.Count();
+                    int skipTotal = rnd.Next(total);
+                    var ChainID = potentialEntries.Skip(skipTotal).ToList().First().ChainId;
+                    return RedirectToAction("Index", new { id = ChainID });
+                }
             }
             
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult SaveImage(string img_save, string save_id)
         {
             if (img_save == null)
@@ -61,14 +79,14 @@ namespace WebDraw.Controllers
             var imageData = img_save.Replace(@"data:image/png;base64,", "");
             var imageName = Guid.NewGuid().ToString() + ".png";
             var filepath = Path.Combine(Server.MapPath("~/Images"), imageName);
+            int ChainID = Convert.ToInt32(save_id);
 
             Entry entry = new Entry();
-            entry.ChainId = Convert.ToInt32(save_id);
+            entry.ChainId = ChainID;
             entry.entryType = EntryType.Picture;
             entry.Value = imageName;
-            //Guid UserGuid = Guid.Parse(User.Identity.ToString());
-            // entry.UserId = db.Users.Where(u => u.IdentityId == UserGuid).SingleOrDefault().Id;
-            entry.UserId = 1;
+            entry.UserId = UserID();
+            entry.Active = true;
 
             using (FileStream fs = new FileStream(filepath, FileMode.Create))
             {
@@ -79,26 +97,38 @@ namespace WebDraw.Controllers
                     bw.Close();
                 }
             }
+            foreach (var item in db.Entries.Where(e=> e.ChainId == ChainID))
+            {
+                item.Active = false;
+            }
             db.Entries.Add(entry);
             db.SaveChanges();
             CloseChain(Convert.ToInt32(save_id));
-            return RedirectToAction("Index", new { id = entry.ChainId });
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult SaveDescription(string description, string save_id)
         {
             Entry entry = new Entry();
-            entry.ChainId = Convert.ToInt32(save_id);
+            int ChainID = Convert.ToInt32(save_id);
+            entry.ChainId = ChainID;
             entry.entryType = EntryType.Description;
             entry.Value = description;
-            entry.UserId = 1;
+            entry.UserId = UserID();
+            entry.Active = true;
+
+            foreach (var item in db.Entries.Where(e => e.ChainId == ChainID))
+            {
+                item.Active = false;
+            }
 
             db.Entries.Add(entry);
             db.SaveChanges();
 
             CloseChain(Convert.ToInt32(save_id));
-            return RedirectToAction("Index", new { id = entry.ChainId });
+            return RedirectToAction("Index");
         }
 
         public ActionResult FullChain(int id)
@@ -107,6 +137,7 @@ namespace WebDraw.Controllers
             return View(chain);
         }
 
+        [Authorize]
         public ActionResult StartChain(string desc)
         {
             // don't do anything with desc yet, but at some point use that to add new start suggestions
@@ -114,7 +145,6 @@ namespace WebDraw.Controllers
             Chain chain = new Chain();
             chain.Open = true;
             int total = db.StartSuggestions.Count();
-            Random rnd = new Random();
             int toSkip = rnd.Next(total);
             var ss = db.StartSuggestions.OrderBy(o => o.Id).Skip(toSkip).Take(1);
             chain.StartID = ss.First().Id;
@@ -133,6 +163,34 @@ namespace WebDraw.Controllers
             {
                 chain.Open = false;
                 db.SaveChanges();
+            }
+        }
+
+        [NonAction]
+        public int UserID()
+        {
+            Guid userGuid;
+            if (Guid.TryParse(User.Identity.GetUserId(), out userGuid))
+            {
+                var user = db.Users.Where(u => u.IdentityId == userGuid).SingleOrDefault();
+                if (user == null)
+                {
+                    // valid guid but no user in the table? that means a user should be created!
+                    User newUser = new Models.User();
+                    newUser.IdentityId = userGuid;
+                    newUser.VisibleName = User.Identity.Name;
+                    db.Users.Add(newUser);
+                    db.SaveChanges();
+                    return newUser.Id;
+                }
+                else
+                {
+                    return user.Id;
+                }
+            }
+            else
+            {
+                return 1; // default user, will be impossible to hit once I turn on authentication (supposedly)
             }
         }
     }
