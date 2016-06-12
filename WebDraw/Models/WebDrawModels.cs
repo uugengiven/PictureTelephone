@@ -18,6 +18,7 @@ namespace WebDraw.Models
         public int Id { get; set; }
         [ForeignKey("StartSuggestion")]
         public int StartID { get; set; }
+        public bool Open { get; set; }
 
         public virtual StartSuggestion StartSuggestion { get; set; }
         public virtual ICollection<Entry> Entries { get; set; }

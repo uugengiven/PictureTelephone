@@ -12,33 +12,40 @@ namespace WebDraw.Controllers
     {
         private WebDrawDbContext db = new WebDrawDbContext();
         // GET: Draw
-        public ActionResult Index(int id)
+        public ActionResult Index(int? id)
         {
-            Entry entry = new Entry();
-            List<Entry> EntryList = db.Entries.Where(s => s.ChainId == id).ToList();
-            Entry lastLink = EntryList.LastOrDefault();
-            if (lastLink == null)
+            if (id != null)
             {
-                var chainStart = db.Chains.Find(id);
-                entry.entryType = EntryType.Description;
-                entry.Value = chainStart.StartSuggestion.Description;
-                entry.ChainId = id;
-                
-            }
-            else
-            {
-                entry = lastLink;
-            }
+                Entry entry = new Entry();
+                List<Entry> EntryList = db.Entries.Where(s => s.ChainId == id).ToList();
+                Entry lastLink = EntryList.LastOrDefault();
+                if (lastLink == null)
+                {
+                    var chainStart = db.Chains.Find(id);
+                    entry.entryType = EntryType.Description;
+                    entry.Value = chainStart.StartSuggestion.Description;
+                    entry.ChainId = (int)id;
 
-            // lets be real, this should go to the approprate type of view based on entryType
-            if (entry.entryType == EntryType.Description)
-            {
-                // If the last one was a description, have them make a picture now
-                return View(entry);
+                }
+                else
+                {
+                    entry = lastLink;
+                }
+
+                // lets be real, this should go to the approprate type of view based on entryType
+                if (entry.entryType == EntryType.Description)
+                {
+                    // If the last one was a description, have them make a picture now
+                    return View(entry);
+                }
+                else
+                {
+                    return View("Describe", entry);
+                }
             }
             else
             {
-                return View("Describe", entry);
+                return View("Describe");
             }
             
         }
@@ -74,6 +81,7 @@ namespace WebDraw.Controllers
             }
             db.Entries.Add(entry);
             db.SaveChanges();
+            CloseChain(Convert.ToInt32(save_id));
             return RedirectToAction("Index", new { id = entry.ChainId });
         }
 
@@ -88,7 +96,8 @@ namespace WebDraw.Controllers
 
             db.Entries.Add(entry);
             db.SaveChanges();
-            
+
+            CloseChain(Convert.ToInt32(save_id));
             return RedirectToAction("Index", new { id = entry.ChainId });
         }
 
@@ -103,6 +112,7 @@ namespace WebDraw.Controllers
             // don't do anything with desc yet, but at some point use that to add new start suggestions
 
             Chain chain = new Chain();
+            chain.Open = true;
             int total = db.StartSuggestions.Count();
             Random rnd = new Random();
             int toSkip = rnd.Next(total);
@@ -113,6 +123,17 @@ namespace WebDraw.Controllers
             db.SaveChanges();
 
             return RedirectToAction("Index", new { id = chain.Id });
+        }
+
+        [NonAction]
+        public void CloseChain(int id)
+        {
+            Chain chain = db.Chains.Find(id);
+            if (chain.Entries.Count() > 10)
+            {
+                chain.Open = false;
+                db.SaveChanges();
+            }
         }
     }
 }
