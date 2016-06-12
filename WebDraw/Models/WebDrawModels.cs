@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebDraw.Models
 {
@@ -13,7 +14,9 @@ namespace WebDraw.Models
 
     public class Chain
     {
+        [Key]
         public int Id { get; set; }
+        [ForeignKey("StartSuggestion")]
         public int StartID { get; set; }
 
         public virtual StartSuggestion StartSuggestion { get; set; }
@@ -26,7 +29,9 @@ namespace WebDraw.Models
         public int ChainId { get; set; }
         public EntryType entryType { get; set; }
         public string Value { get; set; }
-        public Guid UserId { get; set; }
+
+        [ForeignKey("User")]
+        public int UserId { get; set; }
 
         public virtual User User { get; set; }
         public virtual Chain Chain { get; set; }
@@ -42,7 +47,7 @@ namespace WebDraw.Models
     {
         [Key]
         public int Id { get; set; }
-        public Guid IdentityId { get; set; }
+        public Guid? IdentityId { get; set; }
         public string VisibleName { get; set; }
     }
 

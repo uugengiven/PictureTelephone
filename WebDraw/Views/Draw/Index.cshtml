@@ -1,0 +1,46 @@
+﻿@model WebDraw.Models.Entry
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Draw this image:</h2>
+<h3>@Model.Value</h3>
+<div class='demo' id='colors_demo'>
+    <div class='tools'>
+
+    </div>
+</div>
+<canvas id="simple_sketch" width="800" height="300" style="border: 1px solid black;"></canvas>
+
+
+<form action="/draw/saveimage" method="post" id="form1" enctype="multipart/form-data">
+    <div class="btn btn-primary" onclick="submit_form()">Submit!</div>
+    <input type="hidden" name="img_save" id="img_save" />
+    <input type="hidden" name="save_id" value="@Model.ChainId" />
+</form>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/draw")
+
+    <script type="text/javascript">
+            $(function () {
+                $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function () {
+                    $('#colors_demo .tools').append("<a href='#simple_sketch' data-color='" + this + "' class='btn' style='background: " + this + ";'>&nbsp;</a> ");
+                });
+                $.each([[3,"SM"], [5, "M"], [10, "L"], [15, "XL"]], function () {
+                    $('#colors_demo .tools').append("<a href='#simple_sketch' data-size='" + this[0] + "' class='btn' style='background: #ccc'>" + this[1] + "</a> ");
+                });
+                $('#simple_sketch').sketch();
+            });
+
+
+
+
+            function submit_form() {
+                document.getElementById('img_save').value = document.getElementById('simple_sketch').toDataURL('image/png');
+                document.forms["form1"].submit();
+            }
+    </script>
+}

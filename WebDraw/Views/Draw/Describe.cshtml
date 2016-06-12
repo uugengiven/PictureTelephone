@@ -1,0 +1,21 @@
+﻿@model WebDraw.Models.Entry
+@{
+    ViewBag.Title = "Describe";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Describe this picture!</h2>
+<img src="~/Images/@Model.Value" />
+
+<form action="/draw/savedescription" method="post" id="form1" enctype="application/x-www-form-urlencoded">
+    <input type="text" name="description" />
+    <div class="btn btn-primary" onclick="submit_form()">Submit!</div>
+    <input type="hidden" name="save_id" value="@Model.ChainId" />
+</form>
+
+<script>
+    function submit_form() {
+        document.forms["form1"].submit();
+    }
+</script>
+

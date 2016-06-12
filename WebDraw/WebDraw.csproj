@@ -168,6 +168,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ChainsController.cs" />
+    <Compile Include="Controllers\DrawController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="DAL\DbInitialize.cs" />
@@ -237,9 +239,18 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Draw\Index.cshtml" />
+    <Content Include="Views\Chains\Create.cshtml" />
+    <Content Include="Views\Chains\Delete.cshtml" />
+    <Content Include="Views\Chains\Details.cshtml" />
+    <Content Include="Views\Chains\Edit.cshtml" />
+    <Content Include="Views\Chains\Index.cshtml" />
+    <Content Include="Views\Draw\Describe.cshtml" />
+    <Content Include="Views\Draw\FullChain.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
+    <Folder Include="App_Data\Images\" />
+    <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

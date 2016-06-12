@@ -24,6 +24,12 @@ namespace WebDraw.DAL
             {
                 context.StartSuggestions.Add(item);
             }
+
+            User user = new User();
+            user.VisibleName = "Imma the default!";
+
+            context.Users.Add(user);
+
             context.SaveChanges();
         }
     }
