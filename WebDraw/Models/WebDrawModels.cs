@@ -47,6 +47,7 @@ namespace WebDraw.Models
 
     public class User
     {
+        public static object Identity { get; internal set; }
         [Key]
         public int Id { get; set; }
         public Guid? IdentityId { get; set; }

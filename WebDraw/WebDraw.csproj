@@ -192,6 +192,8 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\File.pubxml" />
+    <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -246,6 +248,7 @@
     <Content Include="Views\Chains\Index.cshtml" />
     <Content Include="Views\Draw\Describe.cshtml" />
     <Content Include="Views\Draw\FullChain.cshtml" />
+    <Content Include="Views\Home\ListChains.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Images\" />

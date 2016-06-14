@@ -1,11 +1,16 @@
-﻿@{
+﻿@model IEnumerable<WebDraw.Models.Chain>
+@{
     ViewBag.Title = "Home Page";
 }
 
 <div class="jumbotron">
+    <div>
     <p class="lead">Time to play some Drawing Broken Telephone!</p>
     @Html.ActionLink("Draw", "StartChain", "Draw",null, new { @class = "btn btn-primary" })
+    </div>
 </div>
+
+
 
 <div class="row">
     <div class="col-md-4">
@@ -13,6 +18,16 @@
         <p>
             I haven't made it stop automatically yet. So, you need the link.
         </p>
+    </div>
+    <div class="col-md-4">
+        <h2>Closed Chains</h2>
+
+        @foreach (var chain in Model)
+        {
+            <ul>
+                <li>@Html.ActionLink(chain.StartSuggestion.Description, "Fullchain", "Draw", new { id = chain.Id }, null)</li>
+            </ul>
+        }
     </div>
     
 </div>

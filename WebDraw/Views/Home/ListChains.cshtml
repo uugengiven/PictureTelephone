@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "ListChains";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ListChains</h2>
+
+@foreach(var chain in Model)
+{
+    <ul>
+        <li>@Html.ActionLink(chain.StartSuggestion.Description, "Fullchain", "Draw", new { id = chain.Id }, null)</li>
+    </ul>
+}
