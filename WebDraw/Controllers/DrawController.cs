@@ -83,7 +83,7 @@ namespace WebDraw.Controllers
                                 howfar = 0;
                             }
                         }
-                        if (howfar > 3)
+                        if (howfar > 5)
                         {
                             return RedirectToAction("Index", new { id = ChainID });
                         }
