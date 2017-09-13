@@ -5,7 +5,7 @@
 }
 
 <h2>Describe this picture!</h2>
-<img src="~/Images/@Model.Value" />
+<img src="@Model.PictureURL" />
 
 <form action="/draw/savedescription" method="post" id="form1" enctype="application/x-www-form-urlencoded">
     <input type="text" name="description" />

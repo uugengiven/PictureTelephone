@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Configuration;
 
 namespace WebDraw.Models
 {
@@ -37,6 +38,16 @@ namespace WebDraw.Models
 
         public virtual User User { get; set; }
         public virtual Chain Chain { get; set; }
+
+        public string PictureURL { 
+            get
+            {
+                if (Value != null && entryType == EntryType.Picture)
+                    return ConfigurationManager.AppSettings["AzurePrefix"] + Value;
+                else
+                    return Value;
+            }
+        }
     }
 
     public class StartSuggestion

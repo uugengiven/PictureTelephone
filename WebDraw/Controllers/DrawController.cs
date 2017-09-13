@@ -6,6 +6,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebDraw.Models;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.Drawing;
+using System.Configuration;
+using System.Drawing.Imaging;
 
 namespace WebDraw.Controllers
 {
@@ -76,8 +81,10 @@ namespace WebDraw.Controllers
                 return View("Index"); // will currently error
             }
 
+
+
             var imageData = img_save.Replace(@"data:image/png;base64,", "");
-            var imageName = Guid.NewGuid().ToString() + ".png";
+            var imageName = Guid.NewGuid().ToString() + ".jpg";
             var filepath = Path.Combine(Server.MapPath("~/Images"), imageName);
             int ChainID = Convert.ToInt32(save_id);
 
@@ -88,22 +95,30 @@ namespace WebDraw.Controllers
             entry.UserId = UserID();
             entry.Active = true;
 
-            using (FileStream fs = new FileStream(filepath, FileMode.Create))
+            MemoryStream ms = new MemoryStream(Convert.FromBase64String(imageData));
+            Image img = Image.FromStream(ms);
+
+
+            using (var b = new Bitmap(img.Width, img.Height))
             {
-                using (BinaryWriter bw = new BinaryWriter(fs))
+                // This sets the background of the image to white
+                b.SetResolution(img.HorizontalResolution, img.VerticalResolution);
+
+                using (var g = Graphics.FromImage(b))
                 {
-                    byte[] data = Convert.FromBase64String(imageData);
-                    bw.Write(data);
-                    bw.Close();
+                    g.Clear(Color.White);
+                    g.DrawImageUnscaled(img, 0, 0);
                 }
+                uploadtoAzure(imageName, b);
             }
+            
+
             foreach (var item in db.Entries.Where(e=> e.ChainId == ChainID))
             {
                 item.Active = false;
             }
             db.Entries.Add(entry);
             db.SaveChanges();
-            CloseChain(Convert.ToInt32(save_id));
             return RedirectToAction("Index");
         }
 
@@ -127,7 +142,10 @@ namespace WebDraw.Controllers
             db.Entries.Add(entry);
             db.SaveChanges();
 
-            CloseChain(Convert.ToInt32(save_id));
+            if (db.Entries.Where(x => x.ChainId == ChainID).ToList().Count > 10)
+            {
+                CloseChain(ChainID);
+            }
             return RedirectToAction("Index");
         }
 
@@ -144,10 +162,21 @@ namespace WebDraw.Controllers
 
             Chain chain = new Chain();
             chain.Open = true;
-            int total = db.StartSuggestions.Count();
-            int toSkip = rnd.Next(total);
-            var ss = db.StartSuggestions.OrderBy(o => o.Id).Skip(toSkip).Take(1);
-            chain.StartID = ss.First().Id;
+            if (desc != null)
+            {
+                StartSuggestion ss = new StartSuggestion();
+                ss.Description = desc;
+                db.StartSuggestions.Add(ss);
+                db.SaveChanges();
+                chain.StartID = ss.Id;
+            }
+            else
+            { 
+                int total = db.StartSuggestions.Count();
+                int toSkip = rnd.Next(total);
+                var ss = db.StartSuggestions.OrderBy(o => o.Id).Skip(toSkip).Take(1);
+                chain.StartID = ss.First().Id;
+            }
 
             db.Chains.Add(chain);
             db.SaveChanges();
@@ -159,11 +188,12 @@ namespace WebDraw.Controllers
         public void CloseChain(int id)
         {
             Chain chain = db.Chains.Find(id);
-            if (chain.Entries.Count() > 10)
+            chain.Open = false;
+            foreach (var entry in chain.Entries)
             {
-                chain.Open = false;
-                db.SaveChanges();
+                entry.Active = false;
             }
+            db.SaveChanges();
         }
 
         [NonAction]
@@ -193,5 +223,42 @@ namespace WebDraw.Controllers
                 return 1; // default user, will be impossible to hit once I turn on authentication (supposedly)
             }
         }
+
+        private void uploadtoAzure(string filename, Image upload)
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            // Retrieve reference to a previously created container.
+            CloudBlobContainer container = blobClient.GetContainerReference("images");
+            // Retrieve reference to a blob named "someimage.jpg".
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{filename}");
+            // Create or overwrite the "someimage.jpg" blob with contents from an upload stream.
+            blockBlob.UploadFromStream(ToStream(upload, ImageFormat.Jpeg));
+        }
+        private void deletefromAzure(string filename)
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            // Retrieve reference to a previously created container.
+            CloudBlobContainer container = blobClient.GetContainerReference("images");
+            // Retrieve reference to a blob named "someimage.jpg".
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{filename}");
+            // Create or overwrite the "someimage.jpg" blob with contents from an upload stream.
+            if (blockBlob.Exists())
+            {
+                blockBlob.Delete();
+            }
+        }
+
+        private Stream ToStream(Image image, ImageFormat format)
+        {
+            var stream = new System.IO.MemoryStream();
+            image.Save(stream, format);
+            stream.Position = 0;
+            return stream;
+        }
+
     }
 }
