@@ -120,6 +120,17 @@ namespace WebDraw.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult QuickDelete(int id)
+        {
+            Chain chain = db.Chains.Find(id);
+            if (chain != null)
+            {
+                db.Chains.Remove(chain);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
