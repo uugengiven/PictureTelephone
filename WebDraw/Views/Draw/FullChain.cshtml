@@ -15,13 +15,13 @@
     if (entry.entryType == WebDraw.Models.EntryType.Picture)
     {
         <div class="entry ent-picture">
-            <img src="@entry.PictureURL " /><br />
+            <img src="@entry.PictureURL " /> by @entry.User.VisibleName<br />
 </div>
     }
     else
     {
         <div class="entry ent-description">
-            <h3>@entry.Value</h3>
+            <h3>@entry.Value - @entry.User.VisibleName</h3>
         </div>
     }
 }
