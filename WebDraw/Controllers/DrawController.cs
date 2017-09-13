@@ -63,10 +63,36 @@ namespace WebDraw.Controllers
                 }
                 else
                 {
-                    int total = potentialEntries.Count();
-                    int skipTotal = rnd.Next(total);
-                    var ChainID = potentialEntries.Skip(skipTotal).ToList().First().ChainId;
-                    return RedirectToAction("Index", new { id = ChainID });
+                    int count = 0;
+                    if (count < 10)
+                    {
+                        int total = potentialEntries.Count();
+                        int skipTotal = rnd.Next(total);
+                        var ChainID = potentialEntries.Skip(skipTotal).ToList().First().ChainId;
+                        count++;
+                        var chain = db.Chains.Find(ChainID);
+                        int howfar = 0;
+                        foreach (var entry in chain.Entries)
+                        {
+                            if (entry.UserId == uid)
+                            {
+                                howfar++;
+                            }
+                            else
+                            {
+                                howfar = 0;
+                            }
+                        }
+                        if (howfar > 3)
+                        {
+                            return RedirectToAction("Index", new { id = ChainID });
+                        }
+                    }
+                    else
+                    {
+                        return RedirectToAction("StartChain");
+                    }
+                    
                 }
             }
             
