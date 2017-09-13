@@ -68,7 +68,7 @@ namespace WebDraw.Controllers
                     {
                         int total = potentialEntries.Count();
                         int skipTotal = rnd.Next(total);
-                        var ChainID = potentialEntries.Skip(skipTotal).ToList().First().ChainId;
+                        var ChainID = potentialEntries[skipTotal].ChainId;
                         count++;
                         var chain = db.Chains.Find(ChainID);
                         int howfar = 0;
@@ -83,7 +83,7 @@ namespace WebDraw.Controllers
                                 howfar = 0;
                             }
                         }
-                        if (howfar > 5)
+                        if (howfar > 5 || howfar == (total-1))
                         {
                             return RedirectToAction("Index", new { id = ChainID });
                         }
