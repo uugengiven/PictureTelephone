@@ -88,11 +88,8 @@ namespace WebDraw.Controllers
                             return RedirectToAction("Index", new { id = ChainID });
                         }
                     }
-                    else
-                    {
-                        return RedirectToAction("StartChain");
-                    }
-                    
+                    return RedirectToAction("StartChain");
+                
                 }
             }
             
