@@ -108,7 +108,6 @@ namespace WebDraw.Controllers
 
             var imageData = img_save.Replace(@"data:image/png;base64,", "");
             var imageName = Guid.NewGuid().ToString() + ".jpg";
-            var filepath = Path.Combine(Server.MapPath("~/Images"), imageName);
             int ChainID = Convert.ToInt32(save_id);
 
             Entry entry = new Entry();

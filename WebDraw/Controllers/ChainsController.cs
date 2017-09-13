@@ -17,7 +17,7 @@ namespace WebDraw.Controllers
         // GET: Chains
         public ActionResult Index()
         {
-            var chains = db.Chains.Include(c => c.StartSuggestion).OrderBy(c => c.Id);
+            var chains = db.Chains.Include(c => c.StartSuggestion).Include(c => c.Entries).OrderBy(c => c.Id);
             return View(chains.ToList());
         }
 

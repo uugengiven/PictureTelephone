@@ -24,7 +24,7 @@
             @Html.DisplayFor(modelItem => item.StartSuggestion.Description)
             <div>
                 <ul>
-                    @foreach (var entry in Model.Entries)
+                    @foreach (var entry in item.Entries)
                     {
                         <li>@entry.User.VisibleName</li>
                     }
