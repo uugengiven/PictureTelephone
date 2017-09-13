@@ -56,36 +56,19 @@ namespace WebDraw.Controllers
             {
                 // try to find a random one for the person to work on
                 int uid = UserID();
-                var potentialEntries = db.Entries.Where(e => e.Active == true && e.UserId != uid).ToList();
-                if (potentialEntries.Count == 0)
+                //var potentialEntries = db.Entries.Where(e => e.Active == true && e.UserId != uid).ToList();
+                var potentialChains = db.Chains.Where(e => e.Open == true).ToList();
+                if (potentialChains.Count == 0)
                 {
                     return RedirectToAction("StartChain");
                 }
                 else
                 {
-                    int count = 0;
-                    if (count < 10)
+                    for (int count = 0; count < potentialChains.Count(); count++)
                     {
-                        int total = potentialEntries.Count();
-                        int skipTotal = rnd.Next(total);
-                        var ChainID = potentialEntries[skipTotal].ChainId;
-                        count++;
-                        var chain = db.Chains.Find(ChainID);
-                        int howfar = 0;
-                        foreach (var entry in chain.Entries)
+                        if (potentialChains[count].Entries.Where(x => x.UserId == uid).Count() == 0)
                         {
-                            if (entry.UserId == uid)
-                            {
-                                howfar++;
-                            }
-                            else
-                            {
-                                howfar = 0;
-                            }
-                        }
-                        if (howfar > 5 || howfar == (total-1))
-                        {
-                            return RedirectToAction("Index", new { id = ChainID });
+                            return RedirectToAction("Index", new { id = potentialChains[count].Id });
                         }
                     }
                     return RedirectToAction("StartChain");
