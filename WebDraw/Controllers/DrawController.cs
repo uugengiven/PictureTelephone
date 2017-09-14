@@ -40,6 +40,8 @@ namespace WebDraw.Controllers
                 {
                     entry = lastLink;
                 }
+                entry.lastShown = DateTime.Now;
+                db.SaveChanges();
 
                 // lets be real, this should go to the approprate type of view based on entryType
                 if (entry.entryType == EntryType.Description)
@@ -66,9 +68,22 @@ namespace WebDraw.Controllers
                 {
                     for (int count = 0; count < potentialChains.Count(); count++)
                     {
-                        if (potentialChains[count].Entries.Where(x => x.UserId == uid).Count() == 0)
+                        var entry = potentialChains[count].Entries.LastOrDefault();
+                        DateTime lastShown = DateTime.Now.AddMinutes(-10);
+                        if (entry != null)
                         {
-                            return RedirectToAction("Index", new { id = potentialChains[count].Id });
+                            lastShown = entry.lastShown;
+                        }
+                        if (lastShown == null)
+                        {
+                            lastShown = DateTime.Now.AddMinutes(-10);
+                        }
+                        if (lastShown < DateTime.Now.AddMinutes(-5))
+                        {
+                            if (potentialChains[count].Entries.Where(x => x.UserId == uid).Count() == 0)
+                            {
+                                return RedirectToAction("Index", new { id = potentialChains[count].Id });
+                            }
                         }
                     }
                     return RedirectToAction("StartChain");
@@ -98,6 +113,7 @@ namespace WebDraw.Controllers
             entry.entryType = EntryType.Picture;
             entry.Value = imageName;
             entry.UserId = UserID();
+            entry.created = DateTime.Now;
             entry.Active = true;
 
             MemoryStream ms = new MemoryStream(Convert.FromBase64String(imageData));
@@ -137,6 +153,7 @@ namespace WebDraw.Controllers
             entry.entryType = EntryType.Description;
             entry.Value = description;
             entry.UserId = UserID();
+            entry.created = DateTime.Now;
             entry.Active = true;
 
             foreach (var item in db.Entries.Where(e => e.ChainId == ChainID))
