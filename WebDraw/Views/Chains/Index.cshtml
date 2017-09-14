@@ -21,7 +21,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.StartSuggestion.Description)
+            @Html.DisplayFor(modelItem => item.StartSuggestion.Description) - @item.Open
             <div>
                 <ul>
                     @foreach (var entry in item.Entries)
