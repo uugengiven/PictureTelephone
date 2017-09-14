@@ -32,8 +32,8 @@ namespace WebDraw.Models
         public EntryType entryType { get; set; }
         public string Value { get; set; }
         public bool Active { get; set; }
-        public DateTime created {get;set;}
-        public DateTime lastShown { get; set; }
+        public DateTime? created {get;set;}
+        public DateTime? lastShown { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

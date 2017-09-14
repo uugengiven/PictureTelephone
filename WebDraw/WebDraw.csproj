@@ -188,10 +188,19 @@
     <Compile Include="Controllers\DrawController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="DAL\DbInitialize.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\ApplicationDbContext\201709140231228_initial.cs" />
+    <Compile Include="Migrations\ApplicationDbContext\201709140231228_initial.Designer.cs">
+      <DependentUpon>201709140231228_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\ApplicationDbContext\Configuration.cs" />
+    <Compile Include="Migrations\WebDrawDbContext\201709140231380_initial.cs" />
+    <Compile Include="Migrations\WebDrawDbContext\201709140231380_initial.Designer.cs">
+      <DependentUpon>201709140231380_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\WebDrawDbContext\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -240,7 +249,9 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\sketch.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -287,11 +298,20 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Images\" />
+    <Folder Include="DAL\" />
     <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\ApplicationDbContext\201709140231228_initial.resx">
+      <DependentUpon>201709140231228_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\WebDrawDbContext\201709140231380_initial.resx">
+      <DependentUpon>201709140231380_initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

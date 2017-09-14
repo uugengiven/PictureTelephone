@@ -72,11 +72,7 @@ namespace WebDraw.Controllers
                         DateTime lastShown = DateTime.Now.AddMinutes(-10);
                         if (entry != null)
                         {
-                            lastShown = entry.lastShown;
-                        }
-                        if (lastShown == null)
-                        {
-                            lastShown = DateTime.Now.AddMinutes(-10);
+                            lastShown = entry.lastShown??DateTime.Now.AddMinutes(-10);
                         }
                         if (lastShown < DateTime.Now.AddMinutes(-5))
                         {
